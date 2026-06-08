@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserva para Terceira Idade</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf7f2;
+  --surface:#ffffff;
+  --surface2:#f5f0e8;
+  --border:#e8dfc8;
+  --gold:#c9922a;
+  --gold2:#e8b84b;
+  --gold3:#f5d78e;
+  --dark:#1a1409;
+  --dark2:#2d2510;
+  --text:#2d2510;
+  --text2:#6b5c3e;
+  --text3:#9c8b6e;
+  --green:#2d7a4f;
+  --green2:#4caf7d;
+  --red:#b94040;
+  --blue:#2563a8;
+  --r:14px;
+  --tr:0.22s ease;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:radial-gradient(ellipse at 80% 0%,rgba(201,146,42,.08) 0%,transparent 60%),
+  radial-gradient(ellipse at 0% 100%,rgba(232,184,75,.05) 0%,transparent 50%);}
+
+/* HEADER */
+header{
+  background:linear-gradient(135deg,var(--dark2) 0%,var(--dark) 100%);
+  padding:0 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:2px solid var(--gold);
+  position:sticky;top:0;z-index:100;height:68px;
+}
+.hdr-left{display:flex;align-items:center;gap:14px;}
+.hdr-icon{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+  box-shadow:0 0 18px rgba(201,146,42,.35);
+}
+.hdr-titles h1{font-family:'Playfair Display',serif;font-size:1.15rem;color:#fff;font-weight:700;letter-spacing:-.01em;}
+.hdr-titles p{font-size:.72rem;color:rgba(201,146,42,.8);font-weight:400;margin-top:1px;}
+.hdr-badge{
+  background:rgba(201,146,42,.15);border:1px solid rgba(201,146,42,.3);
+  border-radius:20px;padding:5px 14px;
+  font-size:.72rem;color:var(--gold2);font-weight:500;letter-spacing:.02em;
+}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:400px 1fr;min-height:calc(100vh - 68px);}
+
+/* LEFT */
+.inputs-panel{
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:30px 26px;
+  overflow-y:auto;max-height:calc(100vh - 68px);
+}
+
+/* RIGHT */
+.results-panel{
+  padding:30px 36px;
+  overflow-y:auto;max-height:calc(100vh - 68px);
+}
+
+/* SECTION */
+.section{margin-bottom:26px;}
+.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.sec-icon{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;
+}
+.ig{background:rgba(201,146,42,.12);}
+.ib{background:rgba(37,99,168,.1);}
+.iv{background:rgba(45,122,79,.1);}
+.sec-title{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.divider{height:1px;background:var(--border);margin:22px 0;}
+
+/* FIELDS */
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:.74rem;color:var(--text2);margin-bottom:5px;font-weight:500;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+input[type=number],input[type=text],select{
+  width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;
+  padding:10px 13px;color:var(--text);font-family:'Inter',monospace;font-size:.88rem;
+  outline:none;transition:border-color var(--tr),box-shadow var(--tr);
+}
+input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,146,42,.12);}
+select option{background:#fff;}
+
+.pfx{position:relative;}
+.pfx .p{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  color:var(--gold);font-size:.78rem;font-weight:600;pointer-events:none;}
+.pfx input{padding-left:36px;}
+
+/* TOGGLE */
+.tq{
+  background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;
+  padding:14px 15px;margin-bottom:13px;
+}
+.tq p{font-size:.78rem;color:var(--text);margin-bottom:9px;line-height:1.5;}
+.tbtns{display:flex;gap:7px;}
+.tbtn{
+  flex:1;padding:8px 0;border:1.5px solid var(--border);border-radius:7px;
+  background:transparent;color:var(--text2);font-family:'Inter',sans-serif;
+  font-size:.75rem;font-weight:500;cursor:pointer;transition:all var(--tr);
+}
+.tbtn.active{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:600;}
+.tbtn:not(.active):hover{border-color:var(--gold);color:var(--gold);}
+
+/* COLLAPSIBLE */
+.coll{overflow:hidden;max-height:0;transition:max-height .38s ease;}
+.coll.open{max-height:600px;}
+
+/* HINT */
+.hint{background:rgba(37,99,168,.06);border:1px solid rgba(37,99,168,.18);border-radius:7px;
+  padding:9px 12px;font-size:.7rem;color:var(--text2);margin-top:7px;line-height:1.55;}
+.hint-gold{background:rgba(201,146,42,.07);border:1px solid rgba(201,146,42,.22);border-radius:7px;
+  padding:9px 12px;font-size:.7rem;color:var(--text2);margin-top:7px;line-height:1.55;}
+.hint-green{background:rgba(45,122,79,.06);border:1px solid rgba(45,122,79,.2);border-radius:7px;
+  padding:9px 12px;font-size:.7rem;color:var(--text2);margin-top:7px;line-height:1.55;}
+
+/* AVISO ESTIMATIVA */
+.aviso-estimativa{
+  background:linear-gradient(135deg,rgba(201,146,42,.08),rgba(232,184,75,.05));
+  border:1px solid rgba(201,146,42,.3);border-radius:10px;
+  padding:12px 15px;margin-bottom:20px;
+}
+.aviso-estimativa p{font-size:.7rem;color:var(--text2);line-height:1.6;}
+.aviso-estimativa strong{color:var(--gold);font-size:.72rem;}
+
+/* SLIDER */
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:5px;
+  background:linear-gradient(to right,var(--gold) 0%,var(--border) 0%);
+  border-radius:3px;outline:none;margin:8px 0;border:none;padding:0;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));cursor:pointer;
+  box-shadow:0 2px 8px rgba(201,146,42,.4);border:2px solid #fff;
+}
+.slider-lbl{display:flex;justify-content:space-between;font-size:.67rem;color:var(--text3);}
+
+/* EMPTY STATE */
+.empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;text-align:center;
+}
+.empty-icon{font-size:4rem;margin-bottom:18px;opacity:.25;}
+.empty p{font-size:.88rem;color:var(--text3);line-height:1.7;max-width:340px;}
+
+/* RESULT HEADER */
+.res-hdr{margin-bottom:24px;}
+.res-hdr h2{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;
+  color:var(--dark);margin-bottom:4px;letter-spacing:-.02em;}
+.res-hdr p{font-size:.78rem;color:var(--text2);}
+.res-hdr .cliente-nome{
+  font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);
+  font-weight:600;margin-bottom:2px;
+}
+
+/* CARDS TOPO */
+.cards-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:22px;}
+.card{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:20px;position:relative;overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,.04);transition:box-shadow var(--tr);
+}
+.card:hover{box-shadow:0 4px 20px rgba(0,0,0,.08);}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.c-gold::before{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.c-green::before{background:linear-gradient(90deg,var(--green),var(--green2));}
+.c-blue::before{background:linear-gradient(90deg,var(--blue),#4a90e2);}
+
+.c-label{font-size:.67rem;text-transform:uppercase;letter-spacing:.08em;
+  font-weight:700;color:var(--text3);margin-bottom:3px;}
+.c-sub{font-size:.7rem;color:var(--text3);margin-bottom:10px;line-height:1.3;}
+.c-val{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;line-height:1.1;}
+.c-val.gold{color:var(--gold);}
+.c-val.green{color:var(--green);}
+.c-val.blue{color:var(--blue);}
+.c-sub2{font-size:.7rem;color:var(--text3);margin-top:5px;}
+
+/* PROJEÇÃO CHART */
+.proj-section{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.04);
+}
+.proj-title{
+  font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;
+  color:var(--dark);margin-bottom:4px;display:flex;align-items:center;gap:8px;
+}
+.proj-sub{font-size:.72rem;color:var(--text3);margin-bottom:18px;}
+
+/* CHART SVG */
+.chart-wrap{width:100%;overflow:hidden;}
+svg.chart{width:100%;height:200px;display:block;}
+
+/* MILESTONES */
+.milestones{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;}
+.ms{
+  background:var(--surface2);border:1px solid var(--border);border-radius:9px;
+  padding:11px 12px;text-align:center;
+}
+.ms-year{font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em;margin-bottom:3px;}
+.ms-val{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--gold);}
+.ms-dep{font-size:.65rem;color:var(--text3);margin-top:1px;}
+
+/* BREAKDOWN */
+.bkd{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:20px;margin-bottom:18px;box-shadow:0 2px 12px rgba(0,0,0,.04);
+}
+.bkd-title{font-size:.8rem;font-weight:600;color:var(--dark);margin-bottom:14px;
+  display:flex;align-items:center;gap:7px;}
+.brow{display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid rgba(232,223,200,.7);font-size:.8rem;}
+.brow:last-child{border-bottom:none;}
+.brow .rl{color:var(--text2);}
+.brow .rv{font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;}
+.btotal{display:flex;justify-content:space-between;padding:12px 0 0;
+  margin-top:6px;border-top:1.5px solid var(--border);}
+.btotal .rl{font-weight:700;font-size:.85rem;color:var(--dark);}
+.btotal .rv{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--gold);}
+
+/* CENÁRIOS */
+.cenarios{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;}
+.cenario{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:16px;text-align:center;position:relative;overflow:hidden;
+}
+.cenario::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;}
+.cen-cons::after{background:#9c8b6e;}
+.cen-base::after{background:var(--gold);}
+.cen-otim::after{background:var(--green);}
+.cenario.destaque{border-color:var(--gold);background:rgba(201,146,42,.03);}
+.cen-title{font-size:.67rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--text3);font-weight:700;margin-bottom:6px;}
+.cen-rate{font-size:.72rem;color:var(--text2);margin-bottom:8px;}
+.cen-val{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;}
+.cen-cons .cen-val{color:var(--text2);}
+.cen-base .cen-val{color:var(--gold);}
+.cen-otim .cen-val{color:var(--green);}
+.cen-renda{font-size:.68rem;color:var(--text3);margin-top:4px;}
+
+/* PDF BTN */
+.pdf-btn{
+  width:100%;padding:13px 0;border:none;border-radius:10px;
+  background:linear-gradient(135deg,var(--dark),var(--dark2));
+  color:var(--gold2);font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;
+  cursor:pointer;transition:opacity var(--tr);display:flex;align-items:center;
+  justify-content:center;gap:9px;margin-bottom:22px;letter-spacing:.02em;
+  border:1px solid rgba(201,146,42,.3);
+}
+.pdf-btn:hover{opacity:.85;}
+.pdf-btn:disabled{opacity:.5;cursor:default;}
+
+/* DISCLAIMER */
+.disclaimer{
+  background:rgba(201,146,42,.06);border:1px solid rgba(201,146,42,.2);
+  border-radius:10px;padding:14px 16px;
+}
+.disclaimer p{font-size:.68rem;color:var(--text3);line-height:1.7;}
+.disclaimer strong{color:var(--text2);}
+
+/* RESPONSIVE */
+@media(max-width:1000px){.cards-top,.cenarios{grid-template-columns:1fr 1fr;}.milestones{grid-template-columns:1fr 1fr;}}
+@media(max-width:800px){
+  .app{grid-template-columns:1fr;}
+  .inputs-panel{max-height:none;border-right:none;border-bottom:1px solid var(--border);}
+  .results-panel{max-height:none;}
+  .cards-top,.cenarios{grid-template-columns:1fr;}
+}
+
+/* ANIM */
+.card,.proj-section,.bkd,.cenario{animation:fadeUp .4s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+
+<style id="login-style">
+#login-overlay{
+  position:fixed;inset:0;background:#0d1117;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;padding:24px;
+  background-image:
+    radial-gradient(ellipse at 20% 20%,rgba(0,200,160,.07) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 80%,rgba(201,146,42,.07) 0%,transparent 50%);
+}
+.login-box{
+  background:#161b22;border:1.5px solid #30363d;border-radius:18px;
+  padding:40px 36px;width:100%;max-width:360px;
+  box-shadow:0 24px 64px rgba(0,0,0,.4);
+  display:flex;flex-direction:column;align-items:center;
+}
+.login-icon{
+  width:56px;height:56px;border-radius:16px;
+  background:linear-gradient(135deg,#00c8a0,#3b82f6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;margin-bottom:20px;
+  box-shadow:0 8px 24px rgba(0,200,160,.2);
+}
+.login-title{font-size:1.1rem;font-weight:700;color:#e6edf3;margin-bottom:4px;text-align:center;}
+.login-sub{font-size:.75rem;color:#8b949e;margin-bottom:28px;text-align:center;}
+.login-label{font-size:.73rem;color:#8b949e;font-weight:500;align-self:flex-start;margin-bottom:6px;}
+.login-input-wrap{position:relative;width:100%;margin-bottom:8px;}
+.login-input{
+  width:100%;background:#1c2330;border:1.5px solid #30363d;border-radius:9px;
+  padding:11px 42px 11px 14px;color:#e6edf3;font-family:'Sora',sans-serif;
+  font-size:.9rem;outline:none;letter-spacing:.1em;
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+.login-input:focus{border-color:#00c8a0;box-shadow:0 0 0 3px rgba(0,200,160,.1);}
+.login-input.erro{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.1);}
+.toggle-pw{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:#6e7681;font-size:16px;
+  transition:color .2s;padding:0;line-height:1;
+}
+.toggle-pw:hover{color:#00c8a0;}
+.login-erro{font-size:.72rem;color:#ef4444;margin-bottom:14px;align-self:flex-start;display:none;}
+.login-btn{
+  width:100%;padding:12px 0;border:none;border-radius:9px;
+  background:linear-gradient(135deg,#00c8a0,#0ea5e9);
+  color:#000;font-family:'Sora',sans-serif;font-size:.88rem;font-weight:700;
+  cursor:pointer;transition:opacity .2s ease;margin-top:4px;letter-spacing:.01em;
+}
+.login-btn:hover{opacity:.87;}
+.login-footer{font-size:.65rem;color:#6e7681;margin-top:20px;text-align:center;line-height:1.6;}
+</style>
+</head>
+<body>
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-icon">🔒</div>
+    <div class="login-title">Área Restrita</div>
+    <div class="login-sub">Simuladores de Planejamento Financeiro</div>
+    <div class="login-label">Senha de acesso</div>
+    <div class="login-input-wrap">
+      <input class="login-input" type="password" id="pw-input"
+        placeholder="••••••••" maxlength="20"
+        onkeydown="if(event.key==='Enter')verificar()">
+      <button class="toggle-pw" onclick="togglePW()" title="Mostrar/ocultar">👁</button>
+    </div>
+    <div class="login-erro" id="login-erro">Senha incorreta. Tente novamente.</div>
+    <button class="login-btn" onclick="verificar()">Entrar</button>
+    <div class="login-footer">Acesso exclusivo para consultores autorizados</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  if(sessionStorage.getItem('auth')==='ok'){
+    document.getElementById('login-overlay').style.display='none';
+  }
+})();
+function verificar(){
+  const v=document.getElementById('pw-input').value;
+  const inp=document.getElementById('pw-input');
+  const err=document.getElementById('login-erro');
+  if(v==='2121'){
+    sessionStorage.setItem('auth','ok');
+    const ov=document.getElementById('login-overlay');
+    ov.style.opacity='0';ov.style.transition='opacity .4s ease';
+    setTimeout(()=>ov.style.display='none',400);
+    err.style.display='none';inp.classList.remove('erro');
+  } else {
+    inp.classList.add('erro');err.style.display='block';
+    inp.value='';inp.focus();
+    inp.style.animation='none';
+    setTimeout(()=>{inp.style.animation='shake .35s ease';},10);
+  }
+}
+function togglePW(){
+  const inp=document.getElementById('pw-input');
+  inp.type=inp.type==='password'?'text':'password';
+}
+</script>
+<style>
+@keyframes shake{
+  0%{transform:translateX(0)}20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}100%{transform:translateX(0)}
+}
+</style>
+
+<header>
+  <div class="hdr-left">
+    <div class="hdr-icon">🌅</div>
+    <div class="hdr-titles">
+      <h1>Reserva para Terceira Idade</h1>
+      <p>Previdência Privada · Simulação de Acumulação Patrimonial</p>
+    </div>
+  </div>
+  <div class="hdr-badge">Estimativa · Não é garantia de rendimento</div>
+</header>
+
+<div class="app">
+
+<!-- ═══ LEFT ═══ -->
+<div class="inputs-panel">
+
+  <!-- DADOS DO CLIENTE -->
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-icon ig">👤</div><span class="sec-title">Dados do Cliente</span></div>
+    <div class="field-row" style="margin-bottom:13px;">
+      <div class="field" style="margin:0;">
+        <label>Nome do cliente</label>
+        <input type="text" id="nomeCliente" placeholder="Ex: Maria Oliveira" oninput="calc()">
+      </div>
+      <div class="field" style="margin:0;">
+        <label>Profissão</label>
+        <input type="text" id="profissao" placeholder="Ex: Empresária" oninput="calc()">
+      </div>
+    </div>
+    <div class="field">
+      <label>Idade atual</label>
+      <input type="number" id="idadeAtual" placeholder="Ex: 35" min="18" max="64" oninput="calc()">
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- RENDA PRETENDIDA -->
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-icon ib">💎</div><span class="sec-title">Objetivo na Aposentadoria</span></div>
+
+    <div class="tq">
+      <p>O cliente tem uma renda mensal pretendida para a aposentadoria aos 65 anos?</p>
+      <div class="tbtns">
+        <button class="tbtn active" onclick="togRenda('nao',this)">Não definiu ainda</button>
+        <button class="tbtn" onclick="togRenda('sim',this)">Sim, tem objetivo de renda</button>
+      </div>
+    </div>
+
+    <div class="coll" id="renda-f">
+      <div class="field">
+        <label>Renda mensal desejada na aposentadoria</label>
+        <div class="pfx"><span class="p">R$</span>
+          <input type="number" id="rendaDesejada" placeholder="0,00" min="0" step="100" oninput="calc()">
+        </div>
+      </div>
+      <div class="hint-gold">
+        💡 Com base na renda desejada e uma retirada mensal de <strong>0,5% ao mês</strong> sobre o patrimônio acumulado, o simulador calcula o capital total necessário para sustentá-la.
+      </div>
+    </div>
+
+    <div class="coll open" id="sem-renda-f">
+      <div class="hint">
+        ℹ️ Tudo bem! Os cálculos mostrarão o patrimônio projetado com base nos aportes. O cliente poderá definir a renda desejada depois.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ACUMULAÇÃO -->
+  <div class="section">
+    <div class="sec-hdr"><div class="sec-icon iv">📈</div><span class="sec-title">Estratégia de Acumulação</span></div>
+
+    <div class="field">
+      <label>Disponibilidade mensal para investir</label>
+      <div class="pfx"><span class="p">R$</span>
+        <input type="number" id="aporteMensal" placeholder="0,00" min="0" step="50" oninput="calc()">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Patrimônio / reserva já acumulada (se houver)</label>
+      <div class="pfx"><span class="p">R$</span>
+        <input type="number" id="patrimonioInicial" placeholder="0,00" min="0" step="1000" oninput="calc()">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Taxa de rendimento mensal estimada</label>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+        <input type="range" id="taxaMensal" min="0.3" max="2.0" step="0.05" value="1.0" oninput="updTaxa();calc()" style="flex:1;">
+        <span style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:46px;text-align:right;" id="taxaLbl">1,00%</span>
+      </div>
+      <div class="slider-lbl"><span>0,30%</span><span>1,00% a.m.</span><span>2,00%</span></div>
+      <div class="hint-green" style="margin-top:8px;">
+        🌿 <strong>Padrão: 1% ao mês</strong> — referência comum usada em simulações de previdência privada. Rentabilidade real pode variar conforme o fundo e o cenário econômico.
+      </div>
+    </div>
+
+    <div class="aviso-estimativa" style="margin-top:4px;">
+      <p><strong>⚠ Importante – leia antes de apresentar ao cliente:</strong> Esta simulação é apenas uma <strong>estimativa de alavancagem</strong> para fins de planejamento. Rentabilidade passada não garante retorno futuro. Fundos de previdência privada têm custos (taxa de administração, carregamento) e oscilações que não estão refletidos neste cálculo simplificado.</p>
+    </div>
+  </div>
+
+</div><!-- /inputs -->
+
+<!-- ═══ RIGHT ═══ -->
+<div class="results-panel">
+
+  <div class="empty" id="empty-state">
+    <div class="empty-icon">🌅</div>
+    <p>Preencha a idade e a disponibilidade mensal para visualizar a projeção de acumulação patrimonial.</p>
+  </div>
+
+  <div id="results-content" style="display:none;">
+
+    <div class="res-hdr">
+      <div class="cliente-nome" id="r-nome-display"></div>
+      <h2>Projeção de Reserva para Aposentadoria</h2>
+      <p id="r-subtitle">—</p>
+    </div>
+
+    <button class="pdf-btn" id="pdfBtn" onclick="gerarPDF()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Gerar PDF para o Cliente
+    </button>
+
+    <!-- CARDS -->
+    <div class="cards-top">
+      <div class="card c-gold">
+        <div class="c-label">Tempo de Acumulação</div>
+        <div class="c-sub" id="c-tempo-sub">até os 65 anos</div>
+        <div class="c-val gold" id="c-tempo">— anos</div>
+        <div class="c-sub2" id="c-tempo-sub2">— meses de contribuição</div>
+      </div>
+      <div class="card c-gold">
+        <div class="c-label">Patrimônio Projetado</div>
+        <div class="c-sub">a 1% ao mês</div>
+        <div class="c-val gold" id="c-patrimonio">R$ 0,00</div>
+        <div class="c-sub2" id="c-pat-sub2">Aporte + rendimentos compostos</div>
+      </div>
+      <div class="card c-green">
+        <div class="c-label" id="c-renda-lbl">Renda Mensal Possível</div>
+        <div class="c-sub" id="c-renda-sub">retirada de 0,5%/mês</div>
+        <div class="c-val green" id="c-renda-val">R$ 0,00</div>
+        <div class="c-sub2" id="c-renda-status">—</div>
+      </div>
+    </div>
+
+    <!-- GRÁFICO DE EVOLUÇÃO -->
+    <div class="proj-section">
+      <div class="proj-title">
+        📊 Evolução do Patrimônio ao Longo do Tempo
+      </div>
+      <p class="proj-sub" id="proj-sub-txt">Projeção anual com juros compostos à taxa de 1,00% ao mês</p>
+      <div class="chart-wrap">
+        <svg class="chart" id="chartSvg" viewBox="0 0 640 200" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="milestones" id="milestones"></div>
+    </div>
+
+    <!-- CENÁRIOS -->
+    <div style="margin-bottom:10px;">
+      <div style="font-size:.8rem;font-weight:600;color:var(--dark);margin-bottom:4px;">📐 Cenários de Rentabilidade</div>
+      <div style="font-size:.7rem;color:var(--text3);margin-bottom:12px;">Comparativo do patrimônio acumulado ao longo do período com diferentes taxas mensais</div>
+    </div>
+    <div class="cenarios">
+      <div class="cenario cen-cons">
+        <div class="cen-title">Conservador</div>
+        <div class="cen-rate" id="cen-c-rate">0,60% a.m. · ~7,4% a.a.</div>
+        <div class="cen-val" id="cen-c-val">R$ 0,00</div>
+        <div class="cen-renda" id="cen-c-renda">Renda: —</div>
+      </div>
+      <div class="cenario cen-base destaque">
+        <div class="cen-title">✦ Base (padrão)</div>
+        <div class="cen-rate" id="cen-b-rate">1,00% a.m. · ~12,7% a.a.</div>
+        <div class="cen-val" id="cen-b-val">R$ 0,00</div>
+        <div class="cen-renda" id="cen-b-renda">Renda: —</div>
+      </div>
+      <div class="cenario cen-otim">
+        <div class="cen-title">Otimista</div>
+        <div class="cen-rate" id="cen-o-rate">1,30% a.m. · ~16,8% a.a.</div>
+        <div class="cen-val" id="cen-o-val">R$ 0,00</div>
+        <div class="cen-renda" id="cen-o-renda">Renda: —</div>
+      </div>
+    </div>
+
+    <!-- BREAKDOWN -->
+    <div class="bkd">
+      <div class="bkd-title">🔎 Detalhamento da Projeção</div>
+      <div class="brow"><span class="rl">Idade atual</span><span class="rv" id="b-idade">—</span></div>
+      <div class="brow"><span class="rl">Idade alvo (aposentadoria)</span><span class="rv">65 anos</span></div>
+      <div class="brow"><span class="rl">Período de acumulação</span><span class="rv" id="b-periodo">—</span></div>
+      <div class="brow"><span class="rl">Aporte mensal</span><span class="rv" id="b-aporte">—</span></div>
+      <div class="brow"><span class="rl">Patrimônio inicial</span><span class="rv" id="b-patinicial">—</span></div>
+      <div class="brow"><span class="rl">Taxa mensal aplicada</span><span class="rv" id="b-taxa">—</span></div>
+      <div class="brow"><span class="rl">Total aportado (sem rendimento)</span><span class="rv" id="b-total-aportado">—</span></div>
+      <div class="brow"><span class="rl">Rendimento gerado (juros)</span><span class="rv" id="b-rendimento" style="color:var(--green);">—</span></div>
+      <div class="brow" id="b-row-meta" style="display:none;"><span class="rl">Renda desejada na aposentadoria</span><span class="rv" id="b-meta">—</span></div>
+      <div class="brow" id="b-row-gap" style="display:none;"><span class="rl">Diferença (renda possível vs desejada)</span><span class="rv" id="b-gap">—</span></div>
+      <div class="brow" id="b-row-cap-nec" style="display:none;"><span class="rl">Capital necessário para renda desejada</span><span class="rv" id="b-cap-nec">—</span></div>
+      <div class="brow" id="b-row-aporte-nec" style="display:none;"><span class="rl">Aporte necessário para atingir meta</span><span class="rv" id="b-aporte-nec" style="color:var(--gold);">—</span></div>
+      <div class="btotal">
+        <span class="rl">Patrimônio Total Estimado aos 65 anos</span>
+        <span class="rv" id="b-total">—</span>
+      </div>
+    </div>
+
+    <!-- DISCLAIMER -->
+    <div class="disclaimer">
+      <p>⚠ <strong>Esta é uma simulação estimativa</strong> para fins de planejamento financeiro. Os valores projetados assumem uma taxa de rendimento fixa e não consideram inflação, custos operacionais do fundo (taxa de administração, carregamento), Imposto de Renda sobre o resgate, ou variações de mercado. <strong>Rentabilidade passada não garante retorno futuro.</strong> Recomenda-se a consulta com um profissional certificado (CFP/CEA) para análise completa e escolha adequada do produto de previdência.</p>
+    </div>
+
+  </div>
+
+</div><!-- /results -->
+</div><!-- /app -->
+
+<script>
+// ── STATE ──
+let temRenda = 'nao';
+let lastCalc = {};
+
+function fmtR(v){
+  return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function fmtN(v,dec=0){
+  return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+}
+function pct(v){return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';}
+
+function togRenda(val, btn){
+  temRenda = val;
+  btn.closest('.tbtns').querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('renda-f').classList.toggle('open', val==='sim');
+  document.getElementById('sem-renda-f').classList.toggle('open', val==='nao');
+  calc();
+}
+
+function updTaxa(){
+  const v = parseFloat(document.getElementById('taxaMensal').value)||1;
+  document.getElementById('taxaLbl').textContent = pct(v);
+  // update slider gradient
+  const pctPos = (v - 0.3)/(2.0-0.3)*100;
+  document.getElementById('taxaMensal').style.background =
+    `linear-gradient(to right, var(--gold) ${pctPos}%, var(--border) ${pctPos}%)`;
+}
+
+// Juros compostos: PV*(1+r)^n + PMT*[((1+r)^n - 1)/r]
+function calcFV(pv, pmt, r, n){
+  if(r===0) return pv + pmt*n;
+  const fator = Math.pow(1+r, n);
+  return pv*fator + pmt*(fator-1)/r;
+}
+
+function calc(){
+  const idade       = parseInt(document.getElementById('idadeAtual').value)||0;
+  const aporte      = parseFloat(document.getElementById('aporteMensal').value)||0;
+  const patInicial  = parseFloat(document.getElementById('patrimonioInicial').value)||0;
+  const taxa        = parseFloat(document.getElementById('taxaMensal').value)||1;
+  const r           = taxa/100;
+  const rendaDes    = temRenda==='sim'? (parseFloat(document.getElementById('rendaDesejada').value)||0) : 0;
+  const nome        = document.getElementById('nomeCliente').value||'';
+  const prof        = document.getElementById('profissao').value||'';
+
+  if(!idade || (!aporte && !patInicial)){
+    document.getElementById('empty-state').style.display='flex';
+    document.getElementById('results-content').style.display='none';
+    return;
+  }
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('results-content').style.display='block';
+
+  const anos   = Math.max(1, 65 - idade);
+  const meses  = anos * 12;
+  const taxaAA = (Math.pow(1+r,12)-1)*100;
+
+  // FV principal
+  const fv = calcFV(patInicial, aporte, r, meses);
+  const totalAportado = patInicial + aporte*meses;
+  const rendimento = fv - totalAportado;
+
+  // Renda possível: 0.5% ao mês sobre o patrimônio
+  const rendaPossivel = fv * 0.005;
+
+  // Capital necessário para renda desejada (se tem meta)
+  const capNecessario = rendaDes > 0 ? rendaDes / 0.005 : 0;
+
+  // Aporte necessário para atingir meta
+  let aporteNecessario = 0;
+  if(rendaDes > 0 && r > 0){
+    const capRestante = Math.max(0, capNecessario - patInicial*Math.pow(1+r,meses));
+    aporteNecessario = capRestante * r / (Math.pow(1+r,meses)-1);
+  }
+
+  // Cenários
+  const fvCons = calcFV(patInicial, aporte, 0.006, meses);
+  const fvBase = calcFV(patInicial, aporte, 0.01, meses);
+  const fvOtim = calcFV(patInicial, aporte, 0.013, meses);
+
+  // ── MILESTONE POINTS ──
+  const milestones = [];
+  [5, 10, 15, 20, anos].filter((v,i,a)=>a.indexOf(v)===i && v<=anos).forEach(a=>{
+    milestones.push({anos:a, val:calcFV(patInicial,aporte,r,a*12)});
+  });
+
+  // Save
+  lastCalc={nome,prof,idade,anos,meses,taxa,taxaAA,r,aporte,patInicial,
+    fv,totalAportado,rendimento,rendaPossivel,rendaDes,capNecessario,aporteNecessario,
+    fvCons,fvBase,fvOtim,milestones};
+
+  // ── RENDER ──
+  // Nome
+  const nomeEl=document.getElementById('r-nome-display');
+  nomeEl.textContent=nome?(nome+(prof?' – '+prof:'')):'';
+  nomeEl.style.display=nome?'block':'none';
+
+  document.getElementById('r-subtitle').textContent=
+    `${anos} anos de acumulação · Taxa ${pct(taxa)}/mês · ${pct(taxaAA)}/ano`;
+
+  // Cards
+  document.getElementById('c-tempo').textContent=anos+' anos';
+  document.getElementById('c-tempo-sub').textContent=`dos ${idade} aos 65 anos`;
+  document.getElementById('c-tempo-sub2').textContent=`${meses} meses de contribuição`;
+  document.getElementById('c-patrimonio').textContent=fmtR(fv);
+  document.getElementById('c-pat-sub2').textContent=`Rendimento: ${fmtR(rendimento)}`;
+  document.getElementById('c-renda-val').textContent=fmtR(rendaPossivel);
+  document.getElementById('c-renda-sub').textContent='retirada de 0,5%/mês sobre o patrimônio';
+
+  if(rendaDes>0){
+    const diff=rendaPossivel-rendaDes;
+    const ok=diff>=0;
+    document.getElementById('c-renda-status').textContent=
+      ok?`✓ ${fmtR(diff)} acima da meta`:`⚠ ${fmtR(Math.abs(diff))} abaixo da meta`;
+    document.getElementById('c-renda-status').style.color=ok?'var(--green)':'var(--red)';
+    document.getElementById('c-renda-lbl').textContent='Renda Possível vs Meta';
+  } else {
+    document.getElementById('c-renda-status').textContent='Sem meta definida';
+    document.getElementById('c-renda-lbl').textContent='Renda Mensal Possível';
+  }
+
+  // Cenários
+  document.getElementById('cen-c-val').textContent=fmtR(fvCons);
+  document.getElementById('cen-b-val').textContent=fmtR(fvBase);
+  document.getElementById('cen-o-val').textContent=fmtR(fvOtim);
+  document.getElementById('cen-c-renda').textContent='Renda: '+fmtR(fvCons*0.005)+'/mês';
+  document.getElementById('cen-b-renda').textContent='Renda: '+fmtR(fvBase*0.005)+'/mês';
+  document.getElementById('cen-o-renda').textContent='Renda: '+fmtR(fvOtim*0.005)+'/mês';
+
+  // Breakdown
+  document.getElementById('b-idade').textContent=idade+' anos';
+  document.getElementById('b-periodo').textContent=anos+' anos ('+meses+' meses)';
+  document.getElementById('b-aporte').textContent=fmtR(aporte)+'/mês';
+  document.getElementById('b-patinicial').textContent=fmtR(patInicial);
+  document.getElementById('b-taxa').textContent=pct(taxa)+'/mês ('+pct(taxaAA)+'/ano)';
+  document.getElementById('b-total-aportado').textContent=fmtR(totalAportado);
+  document.getElementById('b-rendimento').textContent='+'+fmtR(rendimento);
+  document.getElementById('b-total').textContent=fmtR(fv);
+
+  const showMeta=rendaDes>0;
+  document.getElementById('b-row-meta').style.display=showMeta?'flex':'none';
+  document.getElementById('b-row-gap').style.display=showMeta?'flex':'none';
+  document.getElementById('b-row-cap-nec').style.display=showMeta?'flex':'none';
+  document.getElementById('b-row-aporte-nec').style.display=showMeta?'flex':'none';
+  if(showMeta){
+    const diff=rendaPossivel-rendaDes;
+    document.getElementById('b-meta').textContent=fmtR(rendaDes)+'/mês';
+    document.getElementById('b-gap').textContent=(diff>=0?'+':'')+fmtR(diff)+'/mês';
+    document.getElementById('b-gap').style.color=diff>=0?'var(--green)':'var(--red)';
+    document.getElementById('b-cap-nec').textContent=fmtR(capNecessario);
+    document.getElementById('b-aporte-nec').textContent=fmtR(aporteNecessario)+'/mês';
+  }
+
+  document.getElementById('proj-sub-txt').textContent=
+    `Projeção anual com juros compostos à taxa de ${pct(taxa)}/mês (${pct(taxaAA)}/ano)`;
+
+  // Chart
+  drawChart(anos, patInicial, aporte, r);
+
+  // Milestones
+  renderMilestones(milestones, anos);
+}
+
+function drawChart(anos, pv, pmt, r){
+  const svg = document.getElementById('chartSvg');
+  const W=640, H=200, PAD=40, PADT=12, PADB=28;
+  const plotW=W-PAD*2, plotH=H-PADT-PADB;
+
+  // Build data annually
+  const pts=[];
+  for(let a=0;a<=anos;a++){
+    const m=a*12;
+    pts.push({a, v:calcFV(pv,pmt,r,m), a0:calcFV(pv,pmt,0,m)});
+  }
+  const maxV=pts[pts.length-1].v;
+
+  function sx(a){return PAD + (a/anos)*plotW;}
+  function sy(v){return PADT + plotH - (v/maxV)*plotH;}
+
+  // Build paths
+  let pathFull='', pathBase='';
+  pts.forEach((p,i)=>{
+    const x=sx(p.a), y=sy(p.v), y0=sy(p.a0);
+    pathFull+=(i===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1)+' ';
+    pathBase+=(i===0?'M':'L')+x.toFixed(1)+','+y0.toFixed(1)+' ';
+  });
+  const lastX=sx(anos), lastY=sy(pts[pts.length-1].v);
+  const fillPath=pathFull+'L'+lastX.toFixed(1)+','+(PADT+plotH)+' L'+PAD+','+(PADT+plotH)+' Z';
+
+  // Y axis labels
+  const yLabels=[];
+  for(let i=0;i<=4;i++){
+    const v=maxV*(i/4);
+    const y=sy(v);
+    yLabels.push({v,y});
+  }
+
+  svg.innerHTML=`
+  <defs>
+    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c9922a" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#c9922a" stop-opacity="0.02"/>
+    </linearGradient>
+  </defs>
+  <!-- Grid lines -->
+  ${yLabels.map(l=>`
+    <line x1="${PAD}" y1="${l.y.toFixed(1)}" x2="${W-PAD}" y2="${l.y.toFixed(1)}"
+      stroke="#e8dfc8" stroke-width="0.8" stroke-dasharray="3,3"/>
+    <text x="${PAD-4}" y="${(l.y+3).toFixed(1)}" font-size="7" fill="#9c8b6e" text-anchor="end">
+      ${l.v>=1e6?fmtN(l.v/1e6,1)+'M':l.v>=1e3?fmtN(l.v/1e3,0)+'k':'0'}
+    </text>
+  `).join('')}
+  <!-- Filled area -->
+  <path d="${fillPath}" fill="url(#areaGrad)"/>
+  <!-- Base line (sem rendimento) -->
+  <path d="${pathBase}" fill="none" stroke="#e8dfc8" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <!-- Main line -->
+  <path d="${pathFull}" fill="none" stroke="#c9922a" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Dots at key points -->
+  ${pts.filter((_,i)=>i%Math.max(1,Math.floor(anos/5))===0||i===pts.length-1).map(p=>`
+    <circle cx="${sx(p.a).toFixed(1)}" cy="${sy(p.v).toFixed(1)}" r="3.5" fill="#c9922a" stroke="#fff" stroke-width="1.5"/>
+    <text x="${sx(p.a).toFixed(1)}" y="${(PADT+plotH+11).toFixed(1)}" font-size="7.5" fill="#9c8b6e" text-anchor="middle">
+      ${p.a===0?'Hoje':p.a+'a'}
+    </text>
+  `).join('')}
+  <!-- End label -->
+  <text x="${lastX.toFixed(1)}" y="${(lastY-8).toFixed(1)}" font-size="8" fill="#c9922a" font-weight="bold" text-anchor="middle">
+    ${maxV>=1e6?'R$ '+fmtN(maxV/1e6,2)+'M':'R$ '+fmtN(maxV/1e3,0)+'k'}
+  </text>
+  <!-- Legend -->
+  <line x1="${PAD}" y1="${H-4}" x2="${PAD+20}" y2="${H-4}" stroke="#c9922a" stroke-width="2"/>
+  <text x="${PAD+24}" y="${H-1}" font-size="7" fill="#9c8b6e">Com rendimento</text>
+  <line x1="${PAD+100}" y1="${H-4}" x2="${PAD+120}" y2="${H-4}" stroke="#e8dfc8" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="${PAD+124}" y="${H-1}" font-size="7" fill="#9c8b6e">Só aportes</text>
+  `;
+}
+
+function renderMilestones(milestones, totalAnos){
+  const el=document.getElementById('milestones');
+  el.innerHTML=milestones.map(m=>`
+    <div class="ms">
+      <div class="ms-year">${m.anos===totalAnos?'Aos 65 anos':m.anos+'º ano'}</div>
+      <div class="ms-val">${m.val>=1e6?'R$ '+fmtN(m.val/1e6,2)+'M':fmtR(m.val)}</div>
+    </div>
+  `).join('');
+}
+
+// ── PDF ──
+async function gerarPDF(){
+  const btn=document.getElementById('pdfBtn');
+  btn.disabled=true;
+  btn.innerHTML='⏳ Gerando PDF...';
+
+  buildPDF();
+
+  btn.disabled=false;
+  btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Gerar PDF para o Cliente';
+}
+
+function buildPDF(){
+  if(!lastCalc||!lastCalc.fv){alert('Preencha os dados antes de gerar o PDF.');return;}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const d=lastCalc;
+  const PW=210,ML=14,MR=14,CW=182,PH=297;
+  let y=0;
+
+  function hx(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+  function sf(h){doc.setFillColor(...hx(h));}
+  function ss(h){doc.setDrawColor(...hx(h));}
+  function st(h){doc.setTextColor(...hx(h));}
+  function R(x,ry,w,h,s){doc.rect(x,ry,w,h,s||'F');}
+  function RR(x,ry,w,h,r,s){doc.roundedRect(x,ry,w,h,r,r,s||'F');}
+  function T(t,x,ty,o){doc.text(String(t),x,ty,o||{});}
+
+  // HEADER
+  sf('#1a1409');R(0,0,PW,48);
+  sf('#c9922a');R(0,47,PW,1.5);
+  // icone circulo
+  sf('#c9922a');doc.circle(ML+10,16,8,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(13);st('#1a1409');T('65',ML+6.5,19.5);
+
+  doc.setFont('helvetica','bold');doc.setFontSize(15);st('#ffffff');
+  T('Reserva para Terceira Idade',ML+24,14);
+  doc.setFont('helvetica','normal');doc.setFontSize(8);st('#c9922a');T('Previdencia Privada  |  Simulacao de Acumulacao Patrimonial',ML+24,21);
+
+  if(d.nome){
+    doc.setFont('helvetica','bold');doc.setFontSize(11);st('#e8b84b');
+    T(d.nome+(d.prof?' - '+d.prof:''),ML+24,30);
+  }
+  doc.setFont('helvetica','normal');doc.setFontSize(8);st('#9c8b6e');
+  T(d.anos+' anos de acumulacao  |  Taxa '+pct(d.taxa)+'/mes  |  '+new Date().toLocaleDateString('pt-BR'),ML+24,38);
+
+  y=55;
+
+  // PERFIL
+  function secTitle(lbl){
+    doc.setFont('helvetica','bold');doc.setFontSize(7);st('#9c8b6e');
+    T(lbl,ML,y);
+    ss('#e8dfc8');sf('#e8dfc8');R(ML,y+2,CW,0.5);
+    y+=9;
+  }
+
+  secTitle('DADOS DO PERFIL');
+  const colW=[42,38,42,38];
+  const perfilRows=[
+    ['Cliente',d.nome||'—','Profissao',d.prof||'—'],
+    ['Idade Atual',d.idade+' anos','Aposentadoria Alvo','65 anos'],
+    ['Periodo de Acumulacao',d.anos+' anos ('+d.meses+' meses)','Taxa Mensal',pct(d.taxa)+'/mes'],
+  ];
+  perfilRows.forEach(row=>{
+    let cx=ML;
+    row.forEach((cell,ci)=>{
+      const isLbl=ci%2===0;
+      sf(isLbl?'#f5f0e8':'#ffffff');R(cx,y-4,colW[ci],9);
+      doc.setFont('helvetica',isLbl?'normal':'bold');
+      doc.setFontSize(isLbl?7.5:8.5);st(isLbl?'#6b5c3e':'#2d2510');
+      T(cell,cx+3,y+1.5);
+      ss('#e8dfc8');R(cx,y-4,colW[ci],9,'S');cx+=colW[ci];
+    });y+=9;
+  });
+  y+=7;
+
+  // 3 CARDS
+  secTitle('RESUMO DA PROJECAO');
+  const cardW=(CW-6)/3;const cardH=34;
+  const cards=[
+    {l:'Patrimonio Projetado',s:'aos 65 anos ('+pct(d.taxa)+'/mes)',v:fmtR(d.fv),c:'#c9922a'},
+    {l:'Renda Mensal Possivel',s:'retirada de 0,5% ao mes',v:fmtR(d.rendaPossivel),c:'#2d7a4f'},
+    {l:'Tempo de Acumulacao',s:'dos '+d.idade+' aos 65 anos',v:d.anos+' anos',c:'#2563a8'},
+  ];
+  cards.forEach((c,i)=>{
+    const cx=ML+i*(cardW+3);
+    sf('#ffffff');RR(cx,y,cardW,cardH,3);ss('#e8dfc8');RR(cx,y,cardW,cardH,3,'S');
+    sf(c.c);R(cx,y,cardW,2.5);
+    doc.setFont('helvetica','bold');doc.setFontSize(6.5);st('#9c8b6e');T(c.l,cx+4,y+7);
+    doc.setFont('helvetica','normal');doc.setFontSize(6);st('#9c8b6e');T(c.s,cx+4,y+11.5);
+    doc.setFont('helvetica','bold');doc.setFontSize(10);st(c.c);T(c.v,cx+4,y+22);
+  });
+  y+=cardH+8;
+
+  // DETALHAMENTO
+  secTitle('DETALHAMENTO DA PROJECAO');
+  const detRows=[
+    ['Aporte mensal',fmtR(d.aporte)+'/mes'],
+    ['Patrimonio inicial',fmtR(d.patInicial)],
+    ['Total aportado ('+d.meses+' meses)',fmtR(d.totalAportado)],
+    ['Rendimento gerado (juros compostos)','+'+fmtR(d.rendimento)],
+    ['Renda possivel na aposentadoria (0,5%/mes)',fmtR(d.rendaPossivel)+'/mes'],
+  ];
+  if(d.rendaDes>0){
+    detRows.push(['Meta de renda desejada',fmtR(d.rendaDes)+'/mes']);
+    detRows.push(['Capital necessario para a meta',fmtR(d.capNecessario)]);
+    detRows.push(['Aporte necessario para atingir meta',fmtR(d.aporteNecessario)+'/mes']);
+  }
+
+  detRows.forEach((r,i)=>{
+    sf(i%2===0?'#faf7f2':'#ffffff');R(ML,y-4,CW,8);
+    doc.setFont('helvetica','normal');doc.setFontSize(8);st('#6b5c3e');T(r[0],ML+4,y+1);
+    doc.setFont('helvetica','bold');st('#2d2510');T(r[1],ML+CW-3,y+1,{align:'right'});
+    ss('#e8dfc8');R(ML,y-4,CW,8,'S');y+=8;
+  });
+  // total
+  sf('#f5f0e8');R(ML,y-4,CW,11);ss('#c9922a');R(ML,y-4,CW,11,'S');sf('#c9922a');R(ML,y-4,3,11);
+  doc.setFont('helvetica','bold');doc.setFontSize(9);st('#2d2510');T('Patrimonio Total Estimado aos 65 anos',ML+7,y+2.5);
+  doc.setFontSize(11);st('#c9922a');T(fmtR(d.fv),ML+CW-3,y+2.5,{align:'right'});
+  y+=16;
+
+  // CENARIOS
+  if(y+30>PH-30){doc.addPage();y=16;}
+  secTitle('CENARIOS DE RENTABILIDADE');
+  const cens=[
+    {l:'Conservador',r:'0,60% a.m.',v:d.fvCons,c:'#9c8b6e'},
+    {l:'Base (padrao)',r:'1,00% a.m.',v:d.fvBase,c:'#c9922a'},
+    {l:'Otimista',r:'1,30% a.m.',v:d.fvOtim,c:'#2d7a4f'},
+  ];
+  const cenW=(CW-8)/3;
+  cens.forEach((c,i)=>{
+    const cx=ML+i*(cenW+4);
+    sf(c.c==='#c9922a'?'#fffbf0':'#faf7f2');RR(cx,y,cenW,22,3,'F');
+    ss(c.c==='#c9922a'?'#c9922a':'#e8dfc8');RR(cx,y,cenW,22,3,'S');
+    sf(c.c);R(cx,y+19.5,cenW,2.5);
+    doc.setFont('helvetica','bold');doc.setFontSize(7);st('#9c8b6e');T(c.l,cx+cenW/2,y+5,{align:'center'});
+    doc.setFont('helvetica','normal');doc.setFontSize(6.5);st('#9c8b6e');T(c.r,cx+cenW/2,y+9,{align:'center'});
+    doc.setFont('helvetica','bold');doc.setFontSize(9);st(c.c);T(fmtR(c.v),cx+cenW/2,y+16,{align:'center'});
+  });
+  y+=30;
+
+  // MILESTONES
+  if(d.milestones&&d.milestones.length){
+    secTitle('EVOLUCAO POR MARCO');
+    const msW=(CW-(d.milestones.length-1)*3)/d.milestones.length;
+    d.milestones.forEach((m,i)=>{
+      const cx=ML+i*(msW+3);
+      sf('#faf7f2');RR(cx,y,msW,18,3);ss('#e8dfc8');RR(cx,y,msW,18,3,'S');
+      doc.setFont('helvetica','bold');doc.setFontSize(6.5);st('#9c8b6e');
+      T(m.anos===d.anos?'Aos 65':m.anos+'o ano',cx+msW/2,y+5,{align:'center'});
+      doc.setFont('helvetica','bold');doc.setFontSize(8);st('#c9922a');
+      T(m.val>=1e6?'R$ '+fmtN(m.val/1e6,2)+'M':fmtR(m.val),cx+msW/2,y+13,{align:'center'});
+    });
+    y+=26;
+  }
+
+  // DISCLAIMER
+  if(y+28>PH-20){doc.addPage();y=16;}
+  sf('#fef9ec');RR(ML,y,CW,26,3,'F');ss('#e8b84b');RR(ML,y,CW,26,3,'S');
+  doc.setFont('helvetica','bold');doc.setFontSize(7);st('#92400e');T('Aviso Legal e Estimativa:',ML+5,y+6);
+  doc.setFont('helvetica','normal');doc.setFontSize(6.5);st('#78350f');
+  const disc='Esta simulacao e apenas uma estimativa para fins de planejamento. Os valores projetados assumem taxa de rendimento fixa e nao consideram inflacao, custos operacionais (taxa de administracao, carregamento), Imposto de Renda sobre o resgate ou variacoes de mercado. Rentabilidade passada nao garante retorno futuro. Consulte um profissional certificado (CFP/CEA).';
+  const dl=doc.splitTextToSize(disc,CW-10);
+  dl.forEach((l,i)=>T(l,ML+5,y+11+i*4));
+  y+=30;
+
+  // FOOTER
+  sf('#1a1409');R(0,PH-14,PW,14);sf('#c9922a');R(0,PH-14,PW,1);
+  doc.setFont('helvetica','normal');doc.setFontSize(7);st('#9c8b6e');
+  T('Reserva para Terceira Idade  |  '+new Date().toLocaleDateString('pt-BR')+'  |  Simulacao Estimativa – Nao e garantia de rendimento',PW/2,PH-7,{align:'center'});
+
+  doc.save('previdencia_'+(d.nome?d.nome.replace(/\s+/g,'_')+'_':'')+new Date().toISOString().slice(0,10)+'.pdf');
+}
+
+// Init
+updTaxa();
+</script>
+</body>
+</html>
